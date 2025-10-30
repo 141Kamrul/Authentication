@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\Employer;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\JobPosted;
 class JobController extends Controller
 {
     //
@@ -29,11 +31,16 @@ class JobController extends Controller
         ]);
     
     
-        Job::create([
+        $job=Job::create([
             'title'=>$request->input('title'),
             'salary'=>$request->input('salary'),
             'employer_id'=>Employer::inRandomOrder()->value('id'),
         ]);
+
+        Mail::to($job->employer->user)->send(
+            new JobPosted($job)
+        );
+
         return redirect('/jobs');
     }
 

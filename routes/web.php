@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\EmployerController;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return view('welcome');
@@ -38,6 +39,13 @@ Route::resource('employers',EmployerController::class)->only([
 Route::controller(EmployerController::class)->group(function() {
     Route::get('/employers','index');
     Route::get('/emmployers/employer','show');
+});
+
+Route::get('/test',function(){
+    
+    Mail::to('jeffrey@laracasts.com')->send(new \App\Mail\JobPosted());
+    return 'DOne';
+    // return new App\Mail\JobPosted() ;
 });
 
 require __DIR__.'/auth.php';
