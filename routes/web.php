@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Jobs\TranslateJob;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\EmployerController;
@@ -43,9 +44,15 @@ Route::controller(EmployerController::class)->group(function() {
 
 Route::get('/test',function(){
     
-    Mail::to('jeffrey@laracasts.com')->send(new \App\Mail\JobPosted());
-    return 'DOne';
+    // Mail::to('jeffrey@laracasts.com')->send(new \App\Mail\JobPosted());
+    // return 'DOne';
     // return new App\Mail\JobPosted() ;
+    // dispatch(function(){
+    //     logger('hello from queue');
+    // })->delay(5);
+    $job=\App\Models\Job::first();
+    TranslateJob::dispatch( $job);
+    return "Done";
 });
 
 require __DIR__.'/auth.php';
