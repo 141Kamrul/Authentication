@@ -15,4 +15,13 @@ class Job extends Model
     public function employer() {
         return $this->belongsTo(Employer::class);
     }
+
+    public function tags(){
+        return $this->belongsToMany(Tag::class, 'job_tag', 'jobs_listings_id', 'tag_id');
+    }
+
+    public function tag(string $name){
+        $tag=Tag::firstOrCreate(['name' => $name]);
+        $this->tags()->attach($tag);
+    }
 }
