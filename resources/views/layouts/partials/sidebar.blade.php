@@ -58,6 +58,10 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Tables
                             </a>
+                            <a class="nav-link" href="{{ route('admin.index') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Data Table
+                            </a>
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
