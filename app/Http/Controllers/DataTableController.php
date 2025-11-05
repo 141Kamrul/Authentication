@@ -60,8 +60,11 @@ class DataTableController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DataTable $dataTable)
+    public function destroy(DataTable $employee)
     {
         //
+        $employee->delete();
+
+        return redirect()->route('admin.index');
     }
 }

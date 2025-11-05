@@ -44,7 +44,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
         Route::patch('/edit', 'edit')->name('admin.edit');
 
-        Route::post('/delete', 'destroy')->name('admin.destroy');
+        Route::delete('/delete/{employee}', 'destroy')->name('admin.destroy');
     });
 
 });

@@ -44,7 +44,7 @@
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
 
-                                <form action="{{ route('admin.destroy', $employee->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('admin.destroy', $employee) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" 
