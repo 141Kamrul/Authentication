@@ -40,7 +40,7 @@
                             <td>{{ $employee->start_date }}</td>
                             <td>${{ number_format($employee->salary, 0) }}</td>
                             <td class="text-center">
-                                <a href="{{ route('admin.edit', $employee->id) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ route('admin.edit', $employee) }}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
 

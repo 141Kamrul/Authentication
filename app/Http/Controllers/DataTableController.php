@@ -34,11 +34,11 @@ class DataTableController extends Controller
         //
         $request->validate( [
             'name'=> ['required','min:5','max:20'],
-            'position' => ['required'],
-            'office' => ['required'],
-            'age' => ['required'],
-            'start_date' => ['required'],
-            'salary' => ['required'],
+            'position' => ['required','string','max:255'],
+            'office' => ['required','string','max:255'],
+            'age' => ['required','integer','min:18','max:65'],
+            'start_date' => ['required','date'],
+            'salary' => ['required','numeric','min:0'],
         ]);
 
         DataTable::create($request->all());
@@ -57,17 +57,38 @@ class DataTableController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(DataTable $dataTable)
+    public function edit(DataTable $employee)
     {
         //
+        return view('admin.edit',['employee'=> $employee]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, DataTable $dataTable)
+    public function update(Request $request, DataTable $employee)
     {
         //
+        $request->validate( [
+            'name'=> ['required','min:5','max:20'],
+            'position' => ['required','string','max:255'],
+            'office' => ['required','string','max:255'],
+            'age' => ['required','integer','min:18','max:65'],
+            'start_date' => ['required','date'],
+            'salary' => ['required','numeric','min:0'],
+        ]);
+
+        $employee->update([
+            'name'=> $request->input('name'),
+            'position' => $request->input('position'),
+            'office' => $request->input('office'),
+            'age' => $request->input('age'),
+            'start_date' => $request->input('start_date'),
+            'salary' => $request->input('salary'),
+        ]);
+
+        return redirect()->route('admin.index')->with('success','');
+
     }
 
     /**

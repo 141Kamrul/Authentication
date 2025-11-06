@@ -43,7 +43,8 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
         Route::get('/create', 'create')->name('admin.create');
         Route::post('/store', 'store')->name('admin.store');
 
-        Route::patch('/edit', 'edit')->name('admin.edit');
+        Route::get('/edit/{employee}', 'edit')->name('admin.edit');
+        Route::put('/update/{employee}', 'update')->name('admin.update');
 
         Route::delete('/delete/{employee}', 'destroy')->name('admin.destroy');
     });
