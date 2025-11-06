@@ -23,6 +23,7 @@ class DataTableController extends Controller
     public function create()
     {
         //
+        return view('admin.create');
     }
 
     /**
@@ -31,6 +32,18 @@ class DataTableController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate( [
+            'name'=> ['required','min:5','max:20'],
+            'position' => ['required'],
+            'office' => ['required'],
+            'age' => ['required'],
+            'start_date' => ['required'],
+            'salary' => ['required'],
+        ]);
+
+        DataTable::create($request->all());
+        return redirect()->route('admin.index')->with('success','');
+
     }
 
     /**
@@ -65,6 +78,8 @@ class DataTableController extends Controller
         //
         $employee->delete();
 
-        return redirect()->route('admin.index');
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

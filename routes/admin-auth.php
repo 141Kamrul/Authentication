@@ -40,7 +40,8 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::controller(DataTableController::class)->group(function(){
         Route::get('/index','index')->name('admin.index');
 
-        Route::post('/create', 'create')->name('admin.create');
+        Route::get('/create', 'create')->name('admin.create');
+        Route::post('/store', 'store')->name('admin.store');
 
         Route::patch('/edit', 'edit')->name('admin.edit');
 

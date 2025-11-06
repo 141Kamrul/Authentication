@@ -9,4 +9,6 @@ class DataTable extends Model
 {
     /** @use HasFactory<\Database\Factories\DataTableFactory> */
     use HasFactory;
+
+    protected $fillable = ['name', 'position', 'office', 'age', 'start_date', 'salary'];
 }
