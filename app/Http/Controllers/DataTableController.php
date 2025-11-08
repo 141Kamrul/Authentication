@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DataTable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DataTableController extends Controller
 {
@@ -31,19 +32,37 @@ class DataTableController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate( [
-            'name'=> ['required','min:5','max:20'],
-            'position' => ['required','string','max:255'],
-            'office' => ['required','string','max:255'],
-            'age' => ['required','integer','min:18','max:65'],
-            'start_date' => ['required','date'],
-            'salary' => ['required','numeric','min:0'],
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'min:5', 'max:20'],
+            'position' => ['required', 'string', 'max:255'],
+            'office' => ['required', 'string', 'max:255'],
+            'age' => ['required', 'integer', 'min:18', 'max:65'],
+            'start_date' => ['required', 'date'],
+            'salary' => ['required', 'numeric', 'min:0'],
         ]);
 
-        DataTable::create($request->all());
-        return redirect()->route('admin.index')->with('success','');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
+        try {
+            $employee = DataTable::create($request->all());
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee created successfully!',
+                'employee' => $employee
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating employee: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -66,30 +85,42 @@ class DataTableController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, DataTable $employee)
+    public function update(Request $request, $id)
     {
-        //
-        $request->validate( [
-            'name'=> ['required','min:5','max:20'],
-            'position' => ['required','string','max:255'],
-            'office' => ['required','string','max:255'],
-            'age' => ['required','integer','min:18','max:65'],
-            'start_date' => ['required','date'],
-            'salary' => ['required','numeric','min:0'],
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'min:5', 'max:20'],
+            'position' => ['required', 'string', 'max:255'],
+            'office' => ['required', 'string', 'max:255'],
+            'age' => ['required', 'integer', 'min:18', 'max:65'],
+            'start_date' => ['required', 'date'],
+            'salary' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $employee->update([
-            'name'=> $request->input('name'),
-            'position' => $request->input('position'),
-            'office' => $request->input('office'),
-            'age' => $request->input('age'),
-            'start_date' => $request->input('start_date'),
-            'salary' => $request->input('salary'),
-        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        return redirect()->route('admin.index')->with('success','');
-
+        try {
+            $employee = DataTable::findOrFail($id);
+            $employee->update($request->all());
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee updated successfully!',
+                'employee' => $employee
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating employee: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -97,10 +128,19 @@ class DataTableController extends Controller
     public function destroy(DataTable $employee)
     {
         //
-        $employee->delete();
 
-        return response()->json([
-            'success' => true,
-        ]);
+        try {
+            $employee->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee deleted successfully!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting employee: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

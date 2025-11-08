@@ -46,7 +46,11 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
         Route::get('/edit/{employee}', 'edit')->name('admin.edit');
         Route::put('/update/{employee}', 'update')->name('admin.update');
 
-        Route::delete('/delete/{employee}', 'destroy')->name('admin.destroy');
+        Route::delete('/{employee}', 'destroy')->name('admin.destroy');
+        
+        
+    
     });
+
 
 });

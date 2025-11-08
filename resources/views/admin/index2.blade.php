@@ -2,17 +2,18 @@
 
 @section('title','Admin Dashboard')
 
+
+
 @section('content')
+    This is Data Table Page
+
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
                 <i class="fas fa-table me-1"></i>
                 Data Table
             </div>
-            
-            <button class="btn btn-primary btn-sm" id="addEmployeeBtn" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                Add New
-            </button>
+            <a href="{{ route('admin.create') }}" class="btn btn-primary btn-sm">Add New</a>
         </div>
 
         <div class="card-body">
@@ -31,7 +32,7 @@
 
                 <tbody>
                     @foreach ($employees as $employee)
-                        <tr data-id="{{ $employee->id }}">
+                        <tr>
                             <td>{{ $employee->name }}</td>
                             <td>{{ $employee->position }}</td>
                             <td>{{ $employee->office }}</td>
@@ -39,21 +40,18 @@
                             <td>{{ $employee->start_date }}</td>
                             <td>${{ number_format($employee->salary, 0) }}</td>
                             <td class="text-center">
-                                <button 
-                                    class="btn btn-sm btn-warning editEmployeeBtn"
-                                    data-id="{{ $employee->id }}"
-                                    data-name="{{ $employee->name }}"
-                                    data-position="{{ $employee->position }}"
-                                    data-office="{{ $employee->office }}"
-                                    data-age="{{ $employee->age }}"
-                                    data-start_date="{{ $employee->start_date }}"
-                                    data-salary="{{ $employee->salary }}">
+                                <a href="{{ route('admin.edit', $employee) }}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i> Edit
-                                </button>
+                                </a>
 
-                               <button class="btn btn-sm btn-danger deleteEmployeeBtn" data-id="{{ $employee->id }}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <form action="{{ route('admin.destroy', $employee) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                        onclick="return confirm('Are you sure you want to delete this employee?')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -74,10 +72,6 @@
         </div>
     </div>
 
-    {{-- Include the modal partial --}}
-    @include('admin.modal')
-@endsection
+                                        
 
-@section('scripts')
-<script src="{{ asset('js/employee.js') }}"></script>
-@endsection
+@endsection()
