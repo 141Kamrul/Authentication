@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title','Admin Dashboard')
+@section('title','Data Table Page')
 
 @section('content')
     <div class="card mb-4">
@@ -79,5 +79,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/employee.js') }}"></script>
+    <script src="{{ asset('js/employee.js') }}"></script>
 @endsection
