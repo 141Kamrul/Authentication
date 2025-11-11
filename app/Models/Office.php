@@ -12,7 +12,7 @@ class Office extends Model
 
     protected $fillable = ['name'];
 
-    public function position(){
+    public function positions(){
         return $this->hasMany(Position::class);
     }
 

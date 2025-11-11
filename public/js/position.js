@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const saveBtn = document.getElementById('savePositionBtn');
     let currentAction = 'create';
 
+    // Get the current office ID from the URL
+    const pathSegments = window.location.pathname.split('/');
+    const officeId = pathSegments[pathSegments.length - 1];
+
     // Event handlers
     document.getElementById('addPositionBtn').addEventListener('click', () => openModal('create'));
     saveBtn.addEventListener('click', handleSave);
@@ -19,7 +23,8 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('name', document.getElementById('name').value);
         formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
 
-        const url = '/admin/position/store'; // CREATE endpoint
+        // Use the dynamic URL with office ID
+        const url = `/admin/office/${officeId}/positions`;
 
         setButtonState(saveBtn, 'Saving...');
 
@@ -34,18 +39,15 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             
             const data = await response.json();
-            console.log('Response data:', data); // Debug log
+            console.log('Response data:', data);
 
             if (response.ok) {
                 showAlert('Position created successfully!', 'success');
                 modal.hide();
                 
-                // Handle different response formats
-                const positionData = data.position || data.data || data;
-                if (positionData && positionData.id) {
-                    addRowToTable(positionData);
+                if (data.position && data.position.id) {
+                    addRowToTable(data.position);
                 } else {
-                    // If no office data in response, reload the page
                     location.reload();
                 }
             } else {

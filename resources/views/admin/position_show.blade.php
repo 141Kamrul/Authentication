@@ -28,15 +28,20 @@
                 <tbody>
                     @foreach ($positions as $position)
                         <tr data-id="{{ $position->id }}">
-                            <td>{{ $position->name }}</td>
+                            <td>
+                                <a href="{{ route('admin.position_employees', $position) }}" class="text-decoration-none">
+                                    {{ $position->name }}
+                                </a>
+                            </td>
                             <td class="text-center">
                                 <button 
                                     class="btn btn-sm btn-warning editPositionBtn"
                                     data-id="{{ $position->id }}"
+                                    data-name="{{ $position->name }}">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
 
-                               <button class="btn btn-sm btn-danger deletePositionBtn" data-id="{{ $position->id }}">
+                                <button class="btn btn-sm btn-danger deletePositionBtn" data-id="{{ $position->id }}">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </td>

@@ -55,7 +55,7 @@ class OfficeController extends Controller
         }
     }
     public function show(Office $office){
-        $positions=$office->position;
+        $positions=$office->positions;
         return view('admin.position_show',['office'=>$office, 'positions'=>$positions, ]);
     }
 }
