@@ -49,18 +49,18 @@
                                     </div>
                                 </nav>
                             </div>
-                            <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="{{ route('admin.charts') }}">
+                            <div class="sb-sidenav-menu-heading">Data Table</div>
+                            <a class="nav-link" href="{{ route('admin.office_index') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Charts
+                                Office Table
                             </a>
-                            <a class="nav-link" href="tables.html">
+                            <a class="nav-link" href="{{ route('admin.position_index') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Tables
+                                Position Table
                             </a>
-                            <a class="nav-link" href="{{ route('admin.index') }}">
+                            <a class="nav-link" href="{{ route('admin.employee_index') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Data Table
+                                Employee Table
                             </a>
                         </div>
                     </div>

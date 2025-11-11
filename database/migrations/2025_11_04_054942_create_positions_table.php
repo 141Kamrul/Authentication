@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('data_tables', function (Blueprint $table) {
+        Schema::create('positions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('position');
-            $table->string('office');
-            $table->integer('age');
-            $table->date('start_date');
-            $table->integer('salary');
-            $table->foreignId('position_id')->nullable();
+            $table->foreignId('office_id')->constrained()->onDelete('');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('data_tables');
+        Schema::dropIfExists('positions');
     }
 };

@@ -14,8 +14,8 @@ class DataTableController extends Controller
     public function index()
     {
         //
-        $employees= Datatable::all();
-        return view('admin.index',['employees'=> $employees]);
+        $employees= DataTable::all();
+        return view('admin.employee_index',['employees'=> $employees]);
     }
 
     /**
