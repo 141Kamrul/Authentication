@@ -11,7 +11,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
         Route::get('/employee/index','index')->name('admin.employee_index');
 
         Route::get('/create', 'create')->name('admin.create');
-        Route::post('/store', 'store')->name('admin.store');
+        Route::post('/employee/store', 'store')->name('admin.store');
 
         Route::get('/edit/{employee}', 'edit')->name('admin.edit');
         Route::put('/update/{employee}', 'update')->name('admin.update');
@@ -34,8 +34,5 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
         Route::post('/office/{office}/positions', 'store')->name('admin.positions.store');
 
         Route::get('/position/{positions}', 'show')->name('admin.position_employees');
-        
     });
-
-
 });

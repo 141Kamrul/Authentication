@@ -17,10 +17,11 @@ class PositionController extends Controller
         return view('admin.position_index',['positions'=> $positions]);
     }
 
-    public function store(Request $request, Office $office) // Add Office parameter
+    public function store(Request $request, Office $office)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:5', 'max:20'],
+            'name' => ['required', 'min:2', 'max:20'],
+            'total_employee_count' => ['required', 'integer', 'min:0'],
         ]);
 
         if ($validator->fails()) {
@@ -32,16 +33,18 @@ class PositionController extends Controller
         }
 
         try {
-            // Create position and associate with the office
+            // Create position with all fields
             $position = Position::create([
                 'name' => $request->name,
-                'office_id' => $office->id // Add office_id
+                'total_employee_count' => $request->total_employee_count,
+                'hired_employee_count' => 0, // Default to 0
+                'office_id' => $office->id
             ]);
             
             return response()->json([
                 'success' => true,
                 'message' => 'Position created successfully!',
-                'position' => $position
+                'position' => $position // Make sure this includes all fields
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -50,8 +53,35 @@ class PositionController extends Controller
             ], 500);
         }
     }
-    // public function show(Position $position){
-    //     $positions=$office->position;
-    //     return view('admin.position_show',['office'=>$office, 'positions'=>$positions, ]);
-    // }
+    public function show($positionParameter){
+    
+        $position = Position::find($positionParameter);
+        
+        $position->load('office');
+        $office_name = $position->office?->name ?? 'Unknown Office';
+        
+        $employees = $position->data_tables;
+        
+        return view('admin.position_show', [
+            'office_name' => $office_name, 
+            'position' => $position, 
+            'employees' => $employees
+        ]);
+}
+
+    public function destroy(Position $position){
+        try {
+            $position->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Position deleted successfully!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting Position: ' . $e->getMessage()
+            ], 500);
+        }
+    } 
 }

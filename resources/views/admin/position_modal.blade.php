@@ -13,10 +13,16 @@
             <input type="hidden" id="position_id" name="id">
 
             <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
+                <label for="name" class="form-label">Position Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
 
+            <div class="mb-3">
+                <label for="total_employee_count" class="form-label">Total Employee Count</label>
+                <input type="number" class="form-control" id="total_employee_count" name="total_employee_count" required min="0">
+            </div>
+
+        </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

@@ -7,8 +7,13 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
                 <i class="fas fa-table me-1"></i>
-                Position Table
+                {{ $office->name }} city Position Table
             </div>
+            <button class="btn btn-primary btn-sm" id="addPositionBtn" data-bs-toggle="modal" data-bs-target="#positionModal">
+                Add New
+            </button>
+            
+            
         </div>
 
         <div class="card-body">
@@ -16,7 +21,6 @@
                 <thead class="table-light">
                     <tr>
                         <th>Position Name</th>
-                        <th>Office Name</th>
                         <th>Total Employee</th>
                         <th>Hired Employee</th>
                         <th>Available Position</th>
@@ -28,13 +32,8 @@
                     @foreach ($positions as $position)
                         <tr data-id="{{ $position->id }}">
                             <td>
-                                <a href="{{ route('admin.position_employees', $position->id) }}" class="text-decoration-none">
+                                <a href="{{ route('admin.position_employees', $position) }}" class="text-decoration-none">
                                     {{ $position->name }}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.office_position', $position->office) }}" class="text-decoration-none">
-                                    {{ $position->office->name ?? 'N/A' }}
                                 </a>
                             </td>
                             <td>{{ $position->total_employee_count }}</td>
@@ -45,7 +44,6 @@
                                     class="btn btn-sm btn-warning editPositionBtn"
                                     data-id="{{ $position->id }}"
                                     data-name="{{ $position->name }}"
-                                    data-office="{{ $position->office->name ?? 'N/A' }}"
                                     data-total_employee_count="{{ $position->total_employee_count }}"
                                     data-hired_employee_count="{{ $position->hired_employee_count }}"
                                     data-available_position="{{ $position->total_employee_count - $position->hired_employee_count }}">
@@ -63,7 +61,6 @@
                 <tfoot>
                     <tr>
                         <th>Position Name</th>
-                        <th>Office Name</th>
                         <th>Total Employee</th>
                         <th>Hired Employee</th>
                         <th>Available Position</th>
@@ -75,9 +72,9 @@
     </div>
 
     {{-- Include the modal partial --}}
-    
+    @include('admin.position_modal')
 @endsection
 
 @section('scripts')
-    {{-- <script src="{{ asset('js/position.js') }}"></script> --}}
+    <script src="{{ asset('js/position.js') }}"></script>
 @endsection

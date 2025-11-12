@@ -17,15 +17,6 @@
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
 
-            <div class="mb-3">
-                <label for="position" class="form-label">Position</label>
-                <input type="text" class="form-control" id="position" name="position" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="office" class="form-label">Office</label>
-                <input type="text" class="form-control" id="office" name="office" required>
-            </div>
 
             <div class="mb-3">
                 <label for="age" class="form-label">Age</label>

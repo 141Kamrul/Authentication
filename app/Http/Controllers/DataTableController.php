@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataTable;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,12 +34,11 @@ class DataTableController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:5', 'max:20'],
-            'position' => ['required', 'string', 'max:255'],
-            'office' => ['required', 'string', 'max:255'],
-            'age' => ['required', 'integer', 'min:18', 'max:65'],
-            'start_date' => ['required', 'date'],
-            'salary' => ['required', 'numeric', 'min:0'],
+            'name' => 'required',
+            'age' => 'required|integer',
+            'start_date' => 'required|date',
+            'salary' => 'required|numeric',
+            'position_id' => 'required|exists:positions,id'
         ]);
 
         if ($validator->fails()) {
@@ -50,16 +50,38 @@ class DataTableController extends Controller
         }
 
         try {
-            $employee = DataTable::create($request->all());
+            // Check if position has available slots
+            $position = Position::findOrFail($request->position_id);
             
+            $availablePositions = $position->total_employee_count - $position->hired_employee_count;
+            
+            if ($availablePositions <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No available positions for this role!'
+                ], 400);
+            }
+
+            // Create employee
+            $employee = DataTable::create($request->all());
+
+            // Increment hired_employee_count
+            $position->increment('hired_employee_count');
+
+            // Get updated available positions
+            $updatedAvailablePositions = $position->total_employee_count - $position->hired_employee_count;
+
             return response()->json([
                 'success' => true,
                 'message' => 'Employee created successfully!',
-                'employee' => $employee
+                'employee' => $employee,
+                'available_positions' => $updatedAvailablePositions
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
+                'request' => $request->all(),
                 'message' => 'Error creating employee: ' . $e->getMessage()
             ], 500);
         }

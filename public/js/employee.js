@@ -45,15 +45,27 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     async function handleSave() {
+        const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+        console.log('🔍 Path Segments:', pathSegments); // ['admin', 'position', '13']
+        
+        // The position ID is the last segment
+        const positionId = pathSegments[pathSegments.length - 1];
+        console.log('🔍 Extracted Position ID:', positionId);
+        
+        if (!positionId || isNaN(positionId)) {
+            showAlert('Error: Could not determine position!', 'danger');
+            return;
+        }
+
         const formData = new FormData();
-        ['name', 'position', 'office', 'age', 'start_date', 'salary'].forEach(field => {
-            formData.append(field, document.getElementById(field).value);
-        });
+        formData.append('name', document.getElementById('name').value);
+        formData.append('age', document.getElementById('age').value);
+        formData.append('start_date', document.getElementById('start_date').value);
+        formData.append('salary', document.getElementById('salary').value);
+        formData.append('position_id', positionId);
         formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
 
-        const url = currentAction === 'update' ? `/admin/update/${currentId}` : '/admin/store';
-        if (currentAction === 'update') formData.append('_method', 'PUT');
-
+        const url = '/admin/employee/store';
         setButtonState(saveBtn, 'Saving...');
 
         try {
@@ -65,19 +77,57 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 body: formData
             });
+            
             const data = await response.json();
+            console.log('🔍 Server Response:', data);
 
-            if (data.success) {
-                showAlert(data.message, 'success');
+            if (response.ok) {
+                showAlert('Employee created successfully!', 'success');
                 modal.hide();
-                currentAction === 'create' ? addRowToTable(data.employee) : updateRowInTable(data.employee);
+                
+                if (data.employee && data.employee.id) {
+                    addRowToTable(data.employee);
+                    if (data.available_positions !== undefined) {
+                        updateAvailablePositions(data.available_positions);
+                    }
+                } else {
+                    location.reload();
+                }
             } else {
-                throw new Error(data.message || 'Error saving employee');
+                // Show specific validation errors
+                if (data.errors) {
+                    console.log('🔍 Validation Errors:', data.errors);
+                    let errorMessages = [];
+                    for (const field in data.errors) {
+                        errorMessages.push(data.errors[field][0]);
+                    }
+                    showAlert('Validation failed: ' + errorMessages.join(', '), 'danger');
+                } else {
+                    throw new Error(data.message || 'Error saving employee');
+                }
             }
         } catch (error) {
+            console.error('Error:', error);
             showAlert(error.message, 'danger');
         } finally {
-            setButtonState(saveBtn, currentAction === 'update' ? 'Update' : 'Save', false);
+            setButtonState(saveBtn, 'Save', false);
+        }
+    }
+
+    // Function to update available positions display
+    function updateAvailablePositions(availablePositions) {
+        // Find and update the available positions count in the table header or somewhere visible
+        const availablePositionsElement = document.querySelector('.available-positions-count');
+        if (availablePositionsElement) {
+            availablePositionsElement.textContent = availablePositions;
+        }
+        
+        // Disable "Add New" button if no available positions left
+        const addButton = document.getElementById('addEmployeeBtn');
+        if (availablePositions <= 0) {
+            addButton.disabled = true;
+            addButton.title = 'No available positions';
+            showAlert('No more available positions for this role!', 'warning');
         }
     }
 
@@ -108,22 +158,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addRowToTable(employee) {
-        const tbody = document.querySelector('#datatablesSimple tbody');
-        const row = document.createElement('tr');
-        row.dataset.id = employee.id;
-        row.innerHTML = `
-            <td>${employee.name}</td>
-            <td>${employee.position}</td>
-            <td>${employee.office}</td>
-            <td>${employee.age}</td>
-            <td>${employee.start_date}</td>
-            <td>$${Number(employee.salary).toLocaleString()}</td>
-            <td class="text-center">
+        console.log('🔍 EMPLOYEE OBJECT FOR TABLE:', employee);
+        
+        // Check if DataTables is initialized
+        if (typeof dataTable !== 'undefined') {
+            // Use DataTables API to add row
+            dataTable.row.add([
+                employee.name || 'N/A',
+                employee.age || 'N/A',
+                employee.start_date || 'N/A',
+                `$${employee.salary ? Number(employee.salary).toLocaleString() : 'N/A'}`,
+                `
                 <button class="btn btn-sm btn-warning editEmployeeBtn"
                     data-id="${employee.id}"
                     data-name="${employee.name}"
-                    data-position="${employee.position}"
-                    data-office="${employee.office}"
                     data-age="${employee.age}"
                     data-start_date="${employee.start_date}"
                     data-salary="${employee.salary}">
@@ -132,9 +180,46 @@ document.addEventListener("DOMContentLoaded", function() {
                 <button class="btn btn-sm btn-danger deleteEmployeeBtn" data-id="${employee.id}">
                     <i class="fas fa-trash"></i> Delete
                 </button>
-            </td>
-        `;
-        tbody.appendChild(row);
+                `
+            ]).draw();
+            console.log('✅ Row added via DataTables API');
+        } else {
+            // Fallback: Try to find tbody with different selectors
+            let tbody = document.querySelector('#datatablesSimple tbody') || 
+                    document.querySelector('.datatables tbody') ||
+                    document.querySelector('table tbody');
+            
+            if (!tbody) {
+                console.error('❌ Table body not found!');
+                location.reload(); // Reload to see the new data
+                return;
+            }
+            
+            const row = document.createElement('tr');
+            row.dataset.id = employee.id;
+            row.innerHTML = `
+                <td>${employee.name || 'N/A'}</td>
+                <td>${employee.age || 'N/A'}</td>
+                <td>${employee.start_date || 'N/A'}</td>
+                <td>$${employee.salary ? Number(employee.salary).toLocaleString() : 'N/A'}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-warning editEmployeeBtn"
+                        data-id="${employee.id}"
+                        data-name="${employee.name}"
+                        data-age="${employee.age}"
+                        data-start_date="${employee.start_date}"
+                        data-salary="${employee.salary}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger deleteEmployeeBtn" data-id="${employee.id}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            console.log('✅ Row added via DOM');
+        }
     }
 
     function updateRowInTable(employee) {
